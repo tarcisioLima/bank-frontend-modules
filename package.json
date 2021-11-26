@@ -1,0 +1,23 @@
+{
+  "name": "bank-frontend-modules",
+  "private": true,
+  "description": "reusable bank module",
+  "keywords": [],
+  "author": "Tarcísio Lima",
+  "scripts": {
+    "build": "lerna run build --scope pix-module",
+    "watch": "lerna run watch --scope pix-module",
+    "package": "lerna exec --scope pix-module -- npm pack"
+  },
+  "workspaces": [
+    "examples/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/react": "^17.0.6",
+    "@types/react-dom": "^17.0.5",
+    "lerna": "^4.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}
