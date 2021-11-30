@@ -1,20 +1,17 @@
-import showResponseErrors, {
-  NotificationType,
-} from "../utils/showResponseErrors";
+import formatAxiosErrors, {
+  formatMessageErrors,
+  formatResponse,
+} from "../utils/formatResponse";
 import { PAGINATION_LIMIT } from "../utils/constants";
 import { AxiosInstance } from "axios";
 
 export interface GetReturn {}
 
-type ExtractService = {
-  get: () => Promise<GetReturn[] | NotificationType>;
-};
-
-const initializeService = (fetcher: AxiosInstance): ExtractService => {
+const initializeService = (fetcher: AxiosInstance) => {
   return {
     get: async () => {
       try {
-        const { data } = await fetcher({
+        const { data } = await fetcher.request<GetReturn[]>({
           url: `/extract`,
           method: "get",
           params: {
@@ -24,15 +21,15 @@ const initializeService = (fetcher: AxiosInstance): ExtractService => {
         });
 
         if (!data) {
-          return false;
+          return formatMessageErrors("Erro de api");
         }
 
-        return data;
+        return formatResponse<GetReturn[]>(data, false, "Listado com sucesso");
       } catch (err) {
-        return showResponseErrors(err);
+        return formatAxiosErrors(err);
       }
     },
-  } as ExtractService;
+  };
 };
 
 export default initializeService;

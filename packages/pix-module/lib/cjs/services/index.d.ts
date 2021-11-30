@@ -1,26 +1,25 @@
 import { AxiosInstance } from "axios";
 declare const all: (fetcher: AxiosInstance) => {
     extract: {
-        get: () => Promise<import("./Extract").GetReturn[] | import("../utils/showResponseErrors").NotificationType>;
+        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Extract").GetReturn[]>>;
     };
     chargeSomeone: {
-        get: () => Promise<import("../utils/showResponseErrors").NotificationType | import("./ChargeSomeone").GetReturn[]>;
+        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./ChargeSomeone").GetReturn[]>>;
     };
     key: {
-        get: () => Promise<import("../utils/showResponseErrors").NotificationType | import("./Key").GetReturn[]>;
+        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Key").GetReturn[]>>;
     };
     limit: {
-        get: () => Promise<import("../utils/showResponseErrors").NotificationType | import("./Limit").GetReturn[]>;
+        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Limit").GetReturn[]>>;
     };
     payQRCode: {
-        get: () => Promise<import("../utils/showResponseErrors").NotificationType | import("./PayQRCode").GetReturn[]>;
+        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./PayQRCode").GetReturn[]>>;
     };
     receipt: {
-        get: () => Promise<import("../utils/showResponseErrors").NotificationType | import("./Receipt").GetReturn[]>;
+        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Receipt").GetReturn[]>>;
     };
     transfer: {
-        get: () => Promise<import("../utils/showResponseErrors").NotificationType | import("./Transfer").GetReturn[]>;
+        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Transfer").GetReturn[]>>;
     };
 };
-export declare type AllServices = ReturnType<typeof all>;
 export default all;

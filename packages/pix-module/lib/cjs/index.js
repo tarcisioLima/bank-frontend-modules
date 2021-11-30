@@ -79,11 +79,15 @@ function __generator(thisArg, body) {
     }
 }
 
-var showResponseErrors = function (error, showFields) {
+var formatAxiosErrors = function (error, showFields) {
     if (showFields === void 0) { showFields = true; }
-    var notification = { message: "Alerta", description: "" };
+    var notification = {
+        data: undefined,
+        error: true,
+        message: "Erro na chamada",
+    };
     if (!error)
-        return false;
+        return notification;
     if ((error.response && error.response.status === 500) ||
         (error.response && error.response.status === 400) ||
         (error.response && error.response.status === 403) ||
@@ -91,16 +95,26 @@ var showResponseErrors = function (error, showFields) {
         var response = error.response;
         Object.entries(response.data).map(function (arr) {
             if (!showFields) {
-                notification.description = String(arr[1]);
+                notification.message = String(arr[1]);
             }
             else {
-                notification.description = "".concat(arr[0], ": ").concat(arr[1]);
+                notification.message = "".concat(arr[0], ": ").concat(arr[1]);
             }
         });
         return notification;
     }
-    return false;
+    return notification;
 };
+var formatMessageErrors = function (message) { return ({
+    data: undefined,
+    error: true,
+    message: message,
+}); };
+var formatResponse = function (data, error, message) { return ({
+    data: data,
+    error: error,
+    message: message,
+}); };
 
 var PAGINATION_LIMIT = 100;
 
@@ -112,7 +126,7 @@ var initializeService$6 = function (fetcher) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, fetcher({
+                        return [4 /*yield*/, fetcher.request({
                                 url: "/extract",
                                 method: "get",
                                 params: {
@@ -123,12 +137,12 @@ var initializeService$6 = function (fetcher) {
                     case 1:
                         data = (_a.sent()).data;
                         if (!data) {
-                            return [2 /*return*/, false];
+                            return [2 /*return*/, formatMessageErrors("Erro de api")];
                         }
-                        return [2 /*return*/, data];
+                        return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
                     case 2:
                         err_1 = _a.sent();
-                        return [2 /*return*/, showResponseErrors(err_1)];
+                        return [2 /*return*/, formatAxiosErrors(err_1)];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -144,7 +158,7 @@ var initializeService$5 = function (fetcher) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, fetcher({
+                        return [4 /*yield*/, fetcher.request({
                                 url: "/charge-someone",
                                 method: "get",
                                 params: {
@@ -155,12 +169,12 @@ var initializeService$5 = function (fetcher) {
                     case 1:
                         data = (_a.sent()).data;
                         if (!data) {
-                            return [2 /*return*/, false];
+                            return [2 /*return*/, formatMessageErrors("Erro na chamada")];
                         }
-                        return [2 /*return*/, data];
+                        return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
                     case 2:
                         err_1 = _a.sent();
-                        return [2 /*return*/, showResponseErrors(err_1)];
+                        return [2 /*return*/, formatAxiosErrors(err_1)];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -187,12 +201,12 @@ var initializeService$4 = function (fetcher) {
                     case 1:
                         data = (_a.sent()).data;
                         if (!data) {
-                            return [2 /*return*/, false];
+                            return [2 /*return*/, formatMessageErrors("Erro de api")];
                         }
-                        return [2 /*return*/, data];
+                        return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
                     case 2:
                         err_1 = _a.sent();
-                        return [2 /*return*/, showResponseErrors(err_1)];
+                        return [2 /*return*/, formatAxiosErrors(err_1)];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -219,12 +233,12 @@ var initializeService$3 = function (fetcher) {
                     case 1:
                         data = (_a.sent()).data;
                         if (!data) {
-                            return [2 /*return*/, false];
+                            return [2 /*return*/, formatMessageErrors("Erro de api")];
                         }
-                        return [2 /*return*/, data];
+                        return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
                     case 2:
                         err_1 = _a.sent();
-                        return [2 /*return*/, showResponseErrors(err_1)];
+                        return [2 /*return*/, formatAxiosErrors(err_1)];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -251,12 +265,12 @@ var initializeService$2 = function (fetcher) {
                     case 1:
                         data = (_a.sent()).data;
                         if (!data) {
-                            return [2 /*return*/, false];
+                            return [2 /*return*/, formatMessageErrors("Erro de api")];
                         }
-                        return [2 /*return*/, data];
+                        return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
                     case 2:
                         err_1 = _a.sent();
-                        return [2 /*return*/, showResponseErrors(err_1)];
+                        return [2 /*return*/, formatAxiosErrors(err_1)];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -283,12 +297,12 @@ var initializeService$1 = function (fetcher) {
                     case 1:
                         data = (_a.sent()).data;
                         if (!data) {
-                            return [2 /*return*/, false];
+                            return [2 /*return*/, formatMessageErrors("Erro de api")];
                         }
-                        return [2 /*return*/, data];
+                        return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
                     case 2:
                         err_1 = _a.sent();
-                        return [2 /*return*/, showResponseErrors(err_1)];
+                        return [2 /*return*/, formatAxiosErrors(err_1)];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -305,7 +319,7 @@ var initializeService = function (fetcher) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, fetcher({
-                                url: "/limits",
+                                url: "/transfer",
                                 method: "get",
                                 params: {
                                     limit: PAGINATION_LIMIT,
@@ -315,12 +329,12 @@ var initializeService = function (fetcher) {
                     case 1:
                         data = (_a.sent()).data;
                         if (!data) {
-                            return [2 /*return*/, false];
+                            return [2 /*return*/, formatMessageErrors("Erro de api")];
                         }
-                        return [2 /*return*/, data];
+                        return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
                     case 2:
                         err_1 = _a.sent();
-                        return [2 /*return*/, showResponseErrors(err_1)];
+                        return [2 /*return*/, formatAxiosErrors(err_1)];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -356,8 +370,5 @@ var PixModule = function (config) {
         services: all(initializedApi),
     };
 };
-
-// import PixModuleWeb from "./web/PixModuleWeb";
-// export { PixModule };
 
 module.exports = PixModule;

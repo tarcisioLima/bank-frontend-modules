@@ -1,16 +1,13 @@
-import showResponseErrors, {
-  NotificationType,
-} from "../utils/showResponseErrors";
+import formatAxiosErrors, {
+  formatMessageErrors,
+  formatResponse,
+} from "../utils/formatResponse";
 import { PAGINATION_LIMIT } from "../utils/constants";
 import { AxiosInstance } from "axios";
 
 export interface GetReturn {}
 
-type LimitService = {
-  get: () => Promise<GetReturn[] | NotificationType>;
-};
-
-const initializeService = (fetcher: AxiosInstance): LimitService => {
+const initializeService = (fetcher: AxiosInstance) => {
   return {
     get: async () => {
       try {
@@ -24,15 +21,15 @@ const initializeService = (fetcher: AxiosInstance): LimitService => {
         });
 
         if (!data) {
-          return false;
+          return formatMessageErrors("Erro de api");
         }
 
-        return data;
+        return formatResponse<GetReturn[]>(data, false, "Listado com sucesso");
       } catch (err) {
-        return showResponseErrors(err);
+        return formatAxiosErrors(err);
       }
     },
-  } as LimitService;
+  };
 };
 
 export default initializeService;

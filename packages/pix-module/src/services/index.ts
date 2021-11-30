@@ -27,6 +27,4 @@ const all = (fetcher: AxiosInstance) => {
   };
 };
 
-export type AllServices = ReturnType<typeof all>;
-
 export default all;

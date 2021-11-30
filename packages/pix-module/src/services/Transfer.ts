@@ -1,21 +1,18 @@
-import showResponseErrors, {
-  NotificationType,
-} from "../utils/showResponseErrors";
+import formatAxiosErrors, {
+  formatMessageErrors,
+  formatResponse,
+} from "../utils/formatResponse";
 import { PAGINATION_LIMIT } from "../utils/constants";
 import { AxiosInstance } from "axios";
 
 export interface GetReturn {}
 
-type TransferService = {
-  get: () => Promise<GetReturn[] | NotificationType>;
-};
-
-const initializeService = (fetcher: AxiosInstance): TransferService => {
+const initializeService = (fetcher: AxiosInstance) => {
   return {
     get: async () => {
       try {
         const { data } = await fetcher({
-          url: `/limits`,
+          url: `/transfer`,
           method: "get",
           params: {
             limit: PAGINATION_LIMIT,
@@ -24,15 +21,15 @@ const initializeService = (fetcher: AxiosInstance): TransferService => {
         });
 
         if (!data) {
-          return false;
+          return formatMessageErrors("Erro de api");
         }
 
-        return data;
+        return formatResponse<GetReturn[]>(data, false, "Listado com sucesso");
       } catch (err) {
-        return showResponseErrors(err);
+        return formatAxiosErrors(err);
       }
     },
-  } as TransferService;
+  };
 };
 
 export default initializeService;

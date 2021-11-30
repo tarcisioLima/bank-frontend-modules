@@ -1,20 +1,17 @@
-import showResponseErrors, {
-  NotificationType,
-} from "../utils/showResponseErrors";
+import formatAxiosErrors, {
+  formatMessageErrors,
+  formatResponse,
+} from "../utils/formatResponse";
 import { PAGINATION_LIMIT } from "../utils/constants";
 import { AxiosInstance } from "axios";
 
 export interface GetReturn {}
 
-type ChargeSomeOneService = {
-  get: () => Promise<GetReturn[] | NotificationType>;
-};
-
-const initializeService = (fetcher: AxiosInstance): ChargeSomeOneService => {
+const initializeService = (fetcher: AxiosInstance) => {
   return {
     get: async () => {
       try {
-        const { data } = await fetcher({
+        const { data } = await fetcher.request<GetReturn[]>({
           url: `/charge-someone`,
           method: "get",
           params: {
@@ -24,15 +21,15 @@ const initializeService = (fetcher: AxiosInstance): ChargeSomeOneService => {
         });
 
         if (!data) {
-          return false;
+          return formatMessageErrors("Erro na chamada");
         }
 
-        return data;
+        return formatResponse<GetReturn[]>(data, false, "Listado com sucesso");
       } catch (err) {
-        return showResponseErrors(err);
+        return formatAxiosErrors(err);
       }
     },
-  } as ChargeSomeOneService;
+  };
 };
 
 export default initializeService;
