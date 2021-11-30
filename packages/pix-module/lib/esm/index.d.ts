@@ -1,2 +1,2 @@
-import Pix from "./Pix";
-export default Pix;
+import PixModule from "./PixModule";
+export default PixModule;

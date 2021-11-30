@@ -1,46 +1,38 @@
-import showResponseErrors from "../utils/showResponseErrors";
+import showResponseErrors, {
+  NotificationType,
+} from "../utils/showResponseErrors";
 import { PAGINATION_LIMIT } from "../utils/constants";
+import { AxiosInstance } from "axios";
 
-const service = {};
+export interface GetReturn {}
 
-service.get = async () => {
-  try {
-    const { data } = await fetch({
-      url: `/extract`,
-      method: "get",
-      params: {
-        limit: PAGINATION_LIMIT,
-        ordering: "-id",
-      },
-    });
-    if (!data) {
-      return false;
-    }
-
-    return data;
-  } catch (err) {
-    showResponseErrors(err);
-    return false;
-  }
+type ExtractService = {
+  get: () => Promise<GetReturn[] | NotificationType>;
 };
 
-/* service.post = async (payload) => {
-  try {
-    const { data } = await fetch({
-      url: `/accounts/`,
-      method: "post",
-      data: payload,
-    });
+const initializeService = (fetcher: AxiosInstance): ExtractService => {
+  return {
+    get: async () => {
+      try {
+        const { data } = await fetcher({
+          url: `/extract`,
+          method: "get",
+          params: {
+            limit: PAGINATION_LIMIT,
+            ordering: "-id",
+          },
+        });
 
-    if (!data) {
-      return false;
-    }
+        if (!data) {
+          return false;
+        }
 
-    return data;
-  } catch (err) {
-    showResponseErrors(err);
-    return false;
-  }
-}; */
+        return data;
+      } catch (err) {
+        return showResponseErrors(err);
+      }
+    },
+  } as ExtractService;
+};
 
-export default service;
+export default initializeService;

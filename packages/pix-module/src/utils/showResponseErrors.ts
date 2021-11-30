@@ -1,10 +1,17 @@
-type Notification = {
+export interface Notification {
   message: string;
   description: string;
-};
+}
 
-const showResponseErrors = (error: any, showFields = true): Notification => {
+export type NotificationType = Notification | Boolean;
+
+const showResponseErrors = (
+  error: any | void,
+  showFields = true
+): NotificationType => {
   let notification = { message: "Alerta", description: "" };
+
+  if (!error) return false;
 
   if (
     (error.response && error.response.status === 500) ||
@@ -20,8 +27,9 @@ const showResponseErrors = (error: any, showFields = true): Notification => {
         notification.description = `${arr[0]}: ${arr[1]}`;
       }
     });
+    return notification;
   }
-  return notification;
+  return false;
 };
 
 export default showResponseErrors;

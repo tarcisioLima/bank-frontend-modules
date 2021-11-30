@@ -7,7 +7,8 @@
   "scripts": {
     "build": "lerna run build --scope pix-module",
     "watch": "lerna run watch --scope pix-module",
-    "package": "lerna exec --scope pix-module -- npm pack"
+    "package": "lerna exec --scope pix-module -- npm pack",
+    "example": "cd ./examples/example-app && npm run start"
   },
   "workspaces": [
     "examples/*",
