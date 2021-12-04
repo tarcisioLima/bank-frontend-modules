@@ -2,28 +2,28 @@ import { AxiosInstance } from "axios";
 import ExtractService from "./Extract";
 import ChargeSomeoneService from "./ChargeSomeone";
 import KeyService from "./Key";
-import LimitService from "./Limit";
+/* import LimitService from "./Limit";
 import PayQRCodeService from "./PayQRCode";
 import ReceiptService from "./Receipt";
 import TransferService from "./Transfer";
-
-const all = (fetcher: AxiosInstance) => {
-  const extract = ExtractService(fetcher);
-  const chargeSomeone = ChargeSomeoneService(fetcher);
-  const key = KeyService(fetcher);
-  const limit = LimitService(fetcher);
-  const payQRCode = PayQRCodeService(fetcher);
-  const receipt = ReceiptService(fetcher);
-  const transfer = TransferService(fetcher);
+ */
+const all = (fetcher: AxiosInstance, isMock: boolean) => {
+  const extract = ExtractService(fetcher, isMock);
+  const charge_someone = ChargeSomeoneService(fetcher, isMock);
+  const key = KeyService(fetcher, isMock);
+  /* const limit = LimitService(fetcher, isMock);
+  const payqrcode = PayQRCodeService(fetcher, isMock);
+  const receipt = ReceiptService(fetcher, isMock);
+  const transfer = TransferService(fetcher, isMock); */
 
   return {
     extract,
-    chargeSomeone,
+    charge_someone,
     key,
-    limit,
-    payQRCode,
+    /*limit,
+    payqrcode,
     receipt,
-    transfer,
+    transfer, */
   };
 };
 

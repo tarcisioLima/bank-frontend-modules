@@ -1,25 +1,15 @@
 import { AxiosInstance } from "axios";
-declare const all: (fetcher: AxiosInstance) => {
+declare const all: (fetcher: AxiosInstance, isMock: boolean) => {
     extract: {
-        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Extract").GetReturn[]>>;
+        get: () => Promise<import("../@types").ApiResponse<import("./Extract").GetReturn[]> | import("../@types").ApiResponse<undefined>>;
     };
-    chargeSomeone: {
+    charge_someone: {
         get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./ChargeSomeone").GetReturn[]>>;
+        post: (payload: import("./ChargeSomeone").Post) => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./ChargeSomeone").GetReturn>>;
     };
     key: {
         get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Key").GetReturn[]>>;
-    };
-    limit: {
-        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Limit").GetReturn[]>>;
-    };
-    payQRCode: {
-        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./PayQRCode").GetReturn[]>>;
-    };
-    receipt: {
-        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Receipt").GetReturn[]>>;
-    };
-    transfer: {
-        get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Transfer").GetReturn[]>>;
+        post: (payload: import("./Key").Post) => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Key").GetReturn>>;
     };
 };
 export default all;
