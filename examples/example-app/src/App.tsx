@@ -6,14 +6,13 @@ import "./App.css";
 const pixModule = PixModule({
   accessToken: "teste",
   baseURL: "https://api.com",
-  isMock: false,
+  isMock: true,
 });
-
-// pixModule.services.extract.get()
 
 function App() {
   const fetch = async () => {
     const { services } = pixModule;
+
     const extract = await services.extract.get();
     const charge = await services.charge_someone.post({
       description: "Teste",
@@ -23,12 +22,26 @@ function App() {
     const key = await services.key.post({
       key_type: "EMAIL",
       type_origin_account: "corrente",
-      key: "teste@teste.com",
+      key: "EMAIL",
     });
-
-    // console.log("# Extract: ", extract);
-    // console.log("# Charge: ", charge);
+    const limit = await services.limit.post({
+      limit_day_amount: 5000,
+      limit_night_amount: 2000,
+    });
+    const payqrcode = await services.payqrcode.post({ code: "testcode" });
+    const receipts = await services.receipt.get();
+    const transfer = await services.transfer.post({
+      amount: 20,
+      receiver_key: 10,
+      type_origin_account: "corrente",
+    });
+    console.log("# Extract: ", extract);
+    console.log("# Charge: ", charge);
     console.log("# Key: ", key);
+    console.log("# Limit: ", limit);
+    console.log("# Receipt: ", receipts);
+    console.log("# Pay QR Code: ", payqrcode);
+    console.log("# Transfer: ", transfer);
   };
 
   useEffect(() => {

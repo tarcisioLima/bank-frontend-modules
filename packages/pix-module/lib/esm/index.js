@@ -133,6 +133,7 @@ var formatResponse = function (data, error, message) { return ({
 
 var PAGINATION_LIMIT = 100;
 var REQUIRED_LABEL = "Campo obrigatório";
+var KEYTYPES = ["PHONE", "DOCUMENT_NUMBER", "EMAIL", "RANDOM"];
 
 var extractMock = [
     {
@@ -169,7 +170,7 @@ var extractMock = [
     },
 ];
 
-var initializeService$2 = function (fetcher, isMock) {
+var initializeService$6 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
         var data, err_1;
         return __generator(this, function (_a) {
@@ -223,12 +224,12 @@ var chargeMock = [
     },
 ];
 
-var PayloadSchema$1 = yup.object().shape({
+var PayloadSchema$4 = yup.object().shape({
     key_id: yup.number().required(REQUIRED_LABEL),
     amount: yup.number(),
     description: yup.string(),
 });
-var initializeService$1 = function (fetcher, isMock) {
+var initializeService$5 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
         var data, err_1;
         return __generator(this, function (_a) {
@@ -267,8 +268,8 @@ var initializeService$1 = function (fetcher, isMock) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!PayloadSchema$1.isValidSync(payload)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, PayloadSchema$1.validate(payload, {
+                    if (!!PayloadSchema$4.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$4.validate(payload, {
                             abortEarly: false,
                         }).catch(function (err) { return err; })];
                 case 1:
@@ -354,18 +355,146 @@ var keysMock = [
     },
 ];
 
-var PayloadSchema = yup.object().shape({
-    key: yup.string(),
-    key_type: yup
-        .mixed()
-        .oneOf(["PHONE", "DOCUMENT_NUMBER", "EMAIL", "RANDOM"])
-        .required(REQUIRED_LABEL),
+var validateCPF = function (ObjCpf) {
+    if (ObjCpf == undefined || ObjCpf == "") {
+        return false;
+    }
+    var strCPF = ObjCpf.replace(/\D/g, "");
+    var Soma;
+    var Resto;
+    Soma = 0;
+    if (strCPF == "00000000000" ||
+        strCPF == "11111111111" ||
+        strCPF == "22222222222" ||
+        strCPF == "33333333333" ||
+        strCPF == "44444444444" ||
+        strCPF == "55555555555" ||
+        strCPF == "66666666666" ||
+        strCPF == "77777777777" ||
+        strCPF == "88888888888" ||
+        strCPF == "99999999999") {
+        return false;
+    }
+    for (var i = 1; i <= 9; i++) {
+        Soma += parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+    }
+    Resto = (Soma * 10) % 11;
+    if (Resto === 10 || Resto === 11)
+        Resto = 0;
+    if (Resto !== parseInt(strCPF.substring(9, 10)))
+        return false;
+    Soma = 0;
+    for (var i = 1; i <= 10; i++) {
+        Soma += parseInt(strCPF.substring(i - 1, i)) * (12 - i);
+    }
+    Resto = (Soma * 10) % 11;
+    if (Resto === 10 || Resto === 11)
+        Resto = 0;
+    if (Resto !== parseInt(strCPF.substring(10, 11)))
+        return false;
+    return true;
+};
+var validateCNPJ = function (cnpj) {
+    cnpj = cnpj.replace(/[^\d]+/g, "");
+    if (cnpj == "")
+        return false;
+    if (cnpj.length != 14)
+        return false;
+    // Elimina CNPJs invalidos conhecidos
+    if (cnpj == "00000000000000" ||
+        cnpj == "11111111111111" ||
+        cnpj == "22222222222222" ||
+        cnpj == "33333333333333" ||
+        cnpj == "44444444444444" ||
+        cnpj == "55555555555555" ||
+        cnpj == "66666666666666" ||
+        cnpj == "77777777777777" ||
+        cnpj == "88888888888888" ||
+        cnpj == "99999999999999") {
+        return false;
+    }
+    // Valida DVs
+    var tamanho = cnpj.length - 2;
+    var numeros = cnpj.substring(0, tamanho);
+    var digitos = cnpj.substring(tamanho);
+    var soma = 0;
+    var pos = tamanho - 7;
+    for (var i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2)
+            pos = 9;
+    }
+    var resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+    if (resultado != digitos.charAt(0))
+        return false;
+    tamanho += 1;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+    for (var i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2)
+            pos = 9;
+    }
+    resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+    if (resultado != digitos.charAt(1))
+        return false;
+    return true;
+};
+var validateDocNumber = (function (doc) {
+    doc = doc.replace(/[^0-9]+/g, "");
+    if (doc.length <= 11) {
+        return validateCPF(doc);
+    }
+    return validateCNPJ(doc);
+});
+
+var validateEmail = function (email) {
+    var reg = /\S+@\S+\.\S+/;
+    return reg.test(email);
+};
+
+var mobilePhone = function (phone) {
+    var clean = phone.replace(/[^0-9]+/g, "");
+    var phoneLength = 11;
+    return clean.length !== phoneLength;
+};
+
+var PayloadSchema$3 = yup.object().shape({
+    key: yup.string().test("key-error", "", function (value) {
+        var type = this.parent.key_type;
+        var _a = this, path = _a.path, createError = _a.createError;
+        var isValid = false;
+        if (!type) {
+            isValid = true;
+        }
+        switch (type) {
+            case "EMAIL":
+                isValid = validateEmail(value);
+                break;
+            case "DOCUMENT_NUMBER":
+                isValid = validateDocNumber(value);
+                break;
+            case "PHONE":
+                isValid = mobilePhone(value);
+                break;
+            case "RANDOM":
+                isValid = true;
+                break;
+        }
+        return (isValid ||
+            createError({
+                path: path,
+                message: "Chave do tipo ".concat(type, " n\u00E3o est\u00E1 no formato v\u00E1lido"),
+            }));
+    }),
+    key_type: yup.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
     type_origin_account: yup
         .mixed()
         .oneOf(["corrente", "poupança"])
         .required(REQUIRED_LABEL),
 });
-var initializeService = function (fetcher, isMock) {
+var initializeService$4 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
         var data, err_1;
         return __generator(this, function (_a) {
@@ -404,8 +533,8 @@ var initializeService = function (fetcher, isMock) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    if (!!PayloadSchema.isValidSync(payload)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, PayloadSchema.validate(payload, {
+                    if (!!PayloadSchema$3.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$3.validate(payload, {
                             abortEarly: false,
                         }).catch(function (err) { return err; })];
                 case 1:
@@ -438,33 +567,373 @@ var initializeService = function (fetcher, isMock) {
             }
         });
     }); };
+    var put = function (key_id, payload) { return __awaiter(void 0, void 0, void 0, function () {
+        var PayloadSchemaUpdate, validationResult, data, err_3;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    PayloadSchemaUpdate = yup.object().shape({
+                        type_origin_account: yup.mixed().oneOf(["corrente", "poupança"]),
+                    });
+                    if (!!PayloadSchema$3.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchemaUpdate.validate(payload, {
+                            abortEarly: false,
+                        }).catch(function (err) { return err; })];
+                case 1:
+                    validationResult = _a.sent();
+                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                case 2:
+                    // MOCK TRUE
+                    if (isMock) {
+                        return [2 /*return*/, formatResponse(__assign(__assign(__assign({}, keysMock[0]), payload), { id: key_id }), false, "Criado com sucesso")];
+                    }
+                    _a.label = 3;
+                case 3:
+                    _a.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, fetcher.request({
+                            url: "/keys/".concat(key_id),
+                            method: "put",
+                            data: payload,
+                        })];
+                case 4:
+                    data = (_a.sent()).data;
+                    if (!data) {
+                        return [2 /*return*/, formatMessageErrors("Erro na chamada")];
+                    }
+                    return [2 /*return*/, formatResponse(data, false, "Criado com sucesso")];
+                case 5:
+                    err_3 = _a.sent();
+                    return [2 /*return*/, formatAxiosErrors(err_3)];
+                case 6: return [2 /*return*/];
+            }
+        });
+    }); };
+    var remove = function (key_id) { return __awaiter(void 0, void 0, void 0, function () {
+        var data, err_4;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    // MOCK TRUE
+                    if (isMock) {
+                        return [2 /*return*/, formatResponse(__assign(__assign({}, keysMock[0]), { id: key_id }), false, "Deletado com sucesso")];
+                    }
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, fetcher.request({
+                            url: "/keys/".concat(key_id),
+                            method: "delete",
+                        })];
+                case 2:
+                    data = (_a.sent()).data;
+                    if (!data) {
+                        return [2 /*return*/, formatMessageErrors("Erro na chamada")];
+                    }
+                    return [2 /*return*/, formatResponse(data, false, "Deletado com sucesso")];
+                case 3:
+                    err_4 = _a.sent();
+                    return [2 /*return*/, formatAxiosErrors(err_4)];
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); };
+    return {
+        get: get,
+        post: post,
+        put: put,
+        remove: remove,
+    };
+};
+
+var limitsMock = {
+    id: 1,
+    limit_day_amount: 50000,
+    limit_night_amount: 1000,
+    updated_at: "06-06-2021",
+};
+
+var PayloadSchema$2 = yup.object().shape({
+    limit_day_amount: yup.number().required(REQUIRED_LABEL),
+    limit_night_amount: yup.number().required(REQUIRED_LABEL),
+});
+var initializeService$3 = function (fetcher, isMock) {
+    var get = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var data, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    // MOCK TRUE
+                    if (isMock) {
+                        return [2 /*return*/, formatResponse(limitsMock, false, "Listado com sucesso")];
+                    }
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, fetcher.request({
+                            url: "/limitation",
+                            method: "get",
+                        })];
+                case 2:
+                    data = (_a.sent()).data;
+                    if (!data) {
+                        return [2 /*return*/, formatMessageErrors("Erro de api")];
+                    }
+                    return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
+                case 3:
+                    err_1 = _a.sent();
+                    return [2 /*return*/, formatAxiosErrors(err_1)];
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); };
+    var post = function (payload) { return __awaiter(void 0, void 0, void 0, function () {
+        var validationResult, id, updated_at, data, err_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!!PayloadSchema$2.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$2.validate(payload, {
+                            abortEarly: false,
+                        }).catch(function (err) { return err; })];
+                case 1:
+                    validationResult = _a.sent();
+                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                case 2:
+                    // MOCK TRUE
+                    if (isMock) {
+                        id = limitsMock.id, updated_at = limitsMock.updated_at;
+                        return [2 /*return*/, formatResponse(__assign(__assign({ id: id }, payload), { updated_at: updated_at }), false, "Criado com sucesso")];
+                    }
+                    _a.label = 3;
+                case 3:
+                    _a.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, fetcher.request({
+                            url: "/limitation",
+                            method: "post",
+                            data: payload,
+                        })];
+                case 4:
+                    data = (_a.sent()).data;
+                    if (!data) {
+                        return [2 /*return*/, formatMessageErrors("Erro na chamada")];
+                    }
+                    return [2 /*return*/, formatResponse(data, false, "Criado com sucesso")];
+                case 5:
+                    err_2 = _a.sent();
+                    return [2 /*return*/, formatAxiosErrors(err_2)];
+                case 6: return [2 /*return*/];
+            }
+        });
+    }); };
     return {
         get: get,
         post: post,
     };
 };
 
-/* import LimitService from "./Limit";
-import PayQRCodeService from "./PayQRCode";
-import ReceiptService from "./Receipt";
-import TransferService from "./Transfer";
- */
+var payqrcodeMock = {
+    id: 1,
+    authentication: "232F23G31A1FUHSADHUSKGZ",
+    code: "00020126350014BR.GOV.BCB.PIX0113test@test.com5204000053039865406225.005802BR5915Fulano da Silca6006Santos62070503***63046647",
+    created_at: "2021-10-12",
+};
+
+var PayloadSchema$1 = yup.object().shape({
+    code: yup.string().required(REQUIRED_LABEL),
+});
+var initializeService$2 = function (fetcher, isMock) {
+    var post = function (payload) { return __awaiter(void 0, void 0, void 0, function () {
+        var validationResult, id, created_at, authentication, data, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!!PayloadSchema$1.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$1.validate(payload, {
+                            abortEarly: false,
+                        }).catch(function (err) { return err; })];
+                case 1:
+                    validationResult = _a.sent();
+                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                case 2:
+                    // MOCK TRUE
+                    if (isMock) {
+                        id = payqrcodeMock.id, created_at = payqrcodeMock.created_at, authentication = payqrcodeMock.authentication;
+                        return [2 /*return*/, formatResponse(__assign(__assign({ id: id }, payload), { authentication: authentication, created_at: created_at }), false, "Criado com sucesso")];
+                    }
+                    _a.label = 3;
+                case 3:
+                    _a.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, fetcher.request({
+                            url: "/pay-qrcode",
+                            method: "post",
+                            data: payload,
+                        })];
+                case 4:
+                    data = (_a.sent()).data;
+                    if (!data) {
+                        return [2 /*return*/, formatMessageErrors("Erro na chamada")];
+                    }
+                    return [2 /*return*/, formatResponse(data, false, "Criado com sucesso")];
+                case 5:
+                    err_1 = _a.sent();
+                    return [2 /*return*/, formatAxiosErrors(err_1)];
+                case 6: return [2 /*return*/];
+            }
+        });
+    }); };
+    return {
+        post: post,
+    };
+};
+
+var receiptstMock = [
+    {
+        id: 1,
+        amount: 521.78,
+        description: "agua, luz, telefone e gas",
+        created_at: "2021-05-05",
+        payment_date: "2021-11-11",
+        type_origin_account: "corrente",
+        authentication: "19787SDSA68ASD8GSA24F322",
+    },
+    {
+        id: 2,
+        amount: 42.18,
+        description: "convenios - celular pré pago",
+        created_at: "2021-05-06",
+        payment_date: "2021-11-11",
+        type_origin_account: "corrente",
+        authentication: "29787SDSA68ASD8GSA24F322",
+    },
+    {
+        id: 3,
+        amount: 841.78,
+        description: "pix pagamento",
+        created_at: "2021-05-06",
+        payment_date: "2021-11-11",
+        type_origin_account: "poupanca",
+        authentication: "39787SDSA68ASD8GSA24F322",
+    },
+];
+
+var initializeService$1 = function (fetcher, isMock) {
+    var get = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var data, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    // MOCK TRUE
+                    if (isMock) {
+                        return [2 /*return*/, formatResponse(receiptstMock, false, "Listado com sucesso")];
+                    }
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, fetcher.request({
+                            url: "/receipts",
+                            method: "get",
+                            params: {
+                                limit: PAGINATION_LIMIT,
+                                ordering: "-id",
+                            },
+                        })];
+                case 2:
+                    data = (_a.sent()).data;
+                    if (!data) {
+                        return [2 /*return*/, formatMessageErrors("Erro de api")];
+                    }
+                    return [2 /*return*/, formatResponse(data, false, "Listado com sucesso")];
+                case 3:
+                    err_1 = _a.sent();
+                    return [2 /*return*/, formatAxiosErrors(err_1)];
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); };
+    return {
+        get: get,
+    };
+};
+
+var transferMock = {
+    id: 1,
+    amount: 200.5,
+    receiver_key: "test@test.com",
+    type_origin_account: "poupança",
+    status: "done",
+    created_at: "2021-06-12",
+    updated_at: "2021-06-12",
+};
+
+var PayloadSchema = yup.object().shape({
+    amount: yup.number().required(REQUIRED_LABEL),
+    receiver_key: yup.number().required(REQUIRED_LABEL),
+    type_origin_account: yup
+        .mixed()
+        .oneOf(["corrente", "poupança"])
+        .required(REQUIRED_LABEL),
+});
+var initializeService = function (fetcher, isMock) {
+    var post = function (payload) { return __awaiter(void 0, void 0, void 0, function () {
+        var validationResult, id, status_1, created_at, updated_at, data, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!!PayloadSchema.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema.validate(payload, {
+                            abortEarly: false,
+                        }).catch(function (err) { return err; })];
+                case 1:
+                    validationResult = _a.sent();
+                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                case 2:
+                    // MOCK TRUE
+                    if (isMock) {
+                        id = transferMock.id, status_1 = transferMock.status, created_at = transferMock.created_at, updated_at = transferMock.updated_at;
+                        return [2 /*return*/, formatResponse(__assign(__assign({ id: id }, payload), { status: status_1, created_at: created_at, updated_at: updated_at }), false, "Criado com sucesso")];
+                    }
+                    _a.label = 3;
+                case 3:
+                    _a.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, fetcher.request({
+                            url: "/transfer",
+                            method: "post",
+                            data: payload,
+                        })];
+                case 4:
+                    data = (_a.sent()).data;
+                    if (!data) {
+                        return [2 /*return*/, formatMessageErrors("Erro na chamada")];
+                    }
+                    return [2 /*return*/, formatResponse(data, false, "Criado com sucesso")];
+                case 5:
+                    err_1 = _a.sent();
+                    return [2 /*return*/, formatAxiosErrors(err_1)];
+                case 6: return [2 /*return*/];
+            }
+        });
+    }); };
+    return {
+        post: post,
+    };
+};
+
 var all = function (fetcher, isMock) {
-    var extract = initializeService$2(fetcher, isMock);
-    var charge_someone = initializeService$1(fetcher, isMock);
-    var key = initializeService(fetcher, isMock);
-    /* const limit = LimitService(fetcher, isMock);
-    const payqrcode = PayQRCodeService(fetcher, isMock);
-    const receipt = ReceiptService(fetcher, isMock);
-    const transfer = TransferService(fetcher, isMock); */
+    var extract = initializeService$6(fetcher, isMock);
+    var charge_someone = initializeService$5(fetcher, isMock);
+    var key = initializeService$4(fetcher, isMock);
+    var limit = initializeService$3(fetcher, isMock);
+    var payqrcode = initializeService$2(fetcher, isMock);
+    var receipt = initializeService$1(fetcher, isMock);
+    var transfer = initializeService(fetcher, isMock);
     return {
         extract: extract,
         charge_someone: charge_someone,
         key: key,
-        /*limit,
-        payqrcode,
-        receipt,
-        transfer, */
+        limit: limit,
+        payqrcode: payqrcode,
+        receipt: receipt,
+        transfer: transfer,
     };
 };
 

@@ -6,7 +6,10 @@ import formatAxiosErrors, {
 import { AxiosInstance } from "axios";
 import keysMock from "../mocks/keys";
 import * as yup from "yup";
-import { REQUIRED_LABEL, PAGINATION_LIMIT } from "../utils/constants";
+import { REQUIRED_LABEL, PAGINATION_LIMIT, KEYTYPES } from "../utils/constants";
+import validateDocNumber from "../utils/docNumberValidator";
+import validateEmail from "../utils/emailValidator";
+import validateMobilePhone from "../utils/mobilePhoneValidator";
 
 export interface Post {
   key?: any;
@@ -23,12 +26,49 @@ export type GetReturn = {
 
 export type PostReturn = GetReturn;
 
+export type DeleteReturn = GetReturn;
+
+export type Put = {
+  type_origin_account?: string;
+};
+
+export type PutReturn = GetReturn;
+
 const PayloadSchema = yup.object().shape({
-  key: yup.string(),
-  key_type: yup
-    .mixed()
-    .oneOf(["PHONE", "DOCUMENT_NUMBER", "EMAIL", "RANDOM"])
-    .required(REQUIRED_LABEL),
+  key: yup.string().test("key-error", "", function (value: string) {
+    const { key_type: type } = this.parent;
+    const { path, createError } = this;
+
+    let isValid = false;
+
+    if (!type) {
+      isValid = true;
+    }
+
+    switch (type) {
+      case "EMAIL":
+        isValid = validateEmail(value);
+        break;
+      case "DOCUMENT_NUMBER":
+        isValid = validateDocNumber(value);
+        break;
+      case "PHONE":
+        isValid = validateMobilePhone(value);
+        break;
+      case "RANDOM":
+        isValid = true;
+        break;
+    }
+
+    return (
+      isValid ||
+      createError({
+        path,
+        message: `Chave do tipo ${type} não está no formato válido`,
+      })
+    );
+  }),
+  key_type: yup.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
   type_origin_account: yup
     .mixed()
     .oneOf(["corrente", "poupança"])
@@ -109,9 +149,85 @@ const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
     }
   };
 
+  const put = async (key_id: number | string, payload: Put) => {
+    const PayloadSchemaUpdate = yup.object().shape({
+      type_origin_account: yup.mixed().oneOf(["corrente", "poupança"]),
+    });
+
+    // YUP VALIDATION
+    if (!PayloadSchema.isValidSync(payload)) {
+      const validationResult = await PayloadSchemaUpdate.validate(payload, {
+        abortEarly: false,
+      }).catch((err) => err);
+      return formatYupErrors(validationResult.errors);
+    }
+
+    // MOCK TRUE
+    if (isMock) {
+      return formatResponse<PutReturn>(
+        {
+          ...keysMock[0],
+          ...payload,
+          id: key_id,
+        },
+        false,
+        "Criado com sucesso"
+      );
+    }
+
+    // MOCK FALSE
+    try {
+      const { data } = await fetcher.request<PutReturn>({
+        url: `/keys/${key_id}`,
+        method: "put",
+        data: payload,
+      });
+
+      if (!data) {
+        return formatMessageErrors("Erro na chamada");
+      }
+
+      return formatResponse<PutReturn>(data, false, "Criado com sucesso");
+    } catch (err) {
+      return formatAxiosErrors(err);
+    }
+  };
+
+  const remove = async (key_id: number | string) => {
+    // MOCK TRUE
+    if (isMock) {
+      return formatResponse<PostReturn>(
+        {
+          ...keysMock[0],
+          id: key_id,
+        },
+        false,
+        "Deletado com sucesso"
+      );
+    }
+
+    // MOCK FALSE
+    try {
+      const { data } = await fetcher.request<DeleteReturn>({
+        url: `/keys/${key_id}`,
+        method: "delete",
+      });
+
+      if (!data) {
+        return formatMessageErrors("Erro na chamada");
+      }
+
+      return formatResponse<DeleteReturn>(data, false, "Deletado com sucesso");
+    } catch (err) {
+      return formatAxiosErrors(err);
+    }
+  };
+
   return {
     get,
     post,
+    put,
+    remove,
   };
 };
 

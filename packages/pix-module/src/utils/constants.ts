@@ -2,6 +2,8 @@ export const PAGINATION_LIMIT = 100;
 export const REQUIRED_LABEL = "Campo obrigatório";
 export const INVALID_FORMAT = "Formato inválido";
 
+export const KEYTYPES = ["PHONE", "DOCUMENT_NUMBER", "EMAIL", "RANDOM"];
+
 export const CpfCnpjRegex =
   /([0-9]{2}[.]?[0-9]{3}[.]?[0-9]{3}[/]?[0-9]{4}[-]?[0-9]{2})|([0-9]{3}[.]?[0-9]{3}[.]?[0-9]{3}[-]?[0-9]{2})/g;
 
