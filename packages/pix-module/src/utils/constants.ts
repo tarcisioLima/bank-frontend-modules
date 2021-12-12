@@ -1,6 +1,6 @@
 export const PAGINATION_LIMIT = 100;
-export const REQUIRED_LABEL = "Campo obrigatório";
-export const INVALID_FORMAT = "Formato inválido";
+export const REQUIRED_LABEL = "obrigatório";
+export const INVALID_FORMAT = "formato inválido";
 
 export const KEYTYPES = ["PHONE", "DOCUMENT_NUMBER", "EMAIL", "RANDOM"];
 

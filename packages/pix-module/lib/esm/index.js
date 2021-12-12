@@ -116,13 +116,27 @@ var formatMessageErrors = function (message) { return ({
     error: true,
     message: message,
 }); };
-var formatYupErrors = function (fields) {
+var formatYupErrors = function (errorValidations) {
     var notification = {
         data: undefined,
         error: true,
-        message: "Erro na chamada",
+        message: "",
     };
-    notification.message = Object.values(fields).join(", ");
+    var errorMessage = "Erro na chamada";
+    if (errorValidations.inner !== undefined) {
+        errorMessage = errorValidations.inner
+            .map(function (value) {
+            return { field: String(value.path), errors: value.errors };
+        })
+            .reduce(function (prev, curr) {
+            var cleanErrors = curr.errors.map(function (error) {
+                return error.replace(curr.field, "");
+            });
+            var joinErrors = "Campo ".concat(curr.field, ": ").concat(cleanErrors.join(" ,"));
+            return prev === "" ? joinErrors : "".concat(prev, ", ").concat(joinErrors);
+        }, "");
+    }
+    notification.message = errorMessage;
     return notification;
 };
 var formatResponse = function (data, error, message) { return ({
@@ -132,7 +146,7 @@ var formatResponse = function (data, error, message) { return ({
 }); };
 
 var PAGINATION_LIMIT = 100;
-var REQUIRED_LABEL = "Campo obrigatório";
+var REQUIRED_LABEL = "obrigatório";
 var KEYTYPES = ["PHONE", "DOCUMENT_NUMBER", "EMAIL", "RANDOM"];
 
 var extractMock = [
@@ -274,7 +288,7 @@ var initializeService$5 = function (fetcher, isMock) {
                         }).catch(function (err) { return err; })];
                 case 1:
                     validationResult = _a.sent();
-                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                    return [2 /*return*/, formatYupErrors(validationResult)];
                 case 2:
                     // MOCK TRUE
                     if (isMock) {
@@ -539,7 +553,7 @@ var initializeService$4 = function (fetcher, isMock) {
                         }).catch(function (err) { return err; })];
                 case 1:
                     validationResult = _b.sent();
-                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                    return [2 /*return*/, formatYupErrors(validationResult)];
                 case 2:
                     // MOCK TRUE
                     if (isMock) {
@@ -581,7 +595,7 @@ var initializeService$4 = function (fetcher, isMock) {
                         }).catch(function (err) { return err; })];
                 case 1:
                     validationResult = _a.sent();
-                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                    return [2 /*return*/, formatYupErrors(validationResult)];
                 case 2:
                     // MOCK TRUE
                     if (isMock) {
@@ -697,7 +711,7 @@ var initializeService$3 = function (fetcher, isMock) {
                         }).catch(function (err) { return err; })];
                 case 1:
                     validationResult = _a.sent();
-                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                    return [2 /*return*/, formatYupErrors(validationResult)];
                 case 2:
                     // MOCK TRUE
                     if (isMock) {
@@ -753,7 +767,7 @@ var initializeService$2 = function (fetcher, isMock) {
                         }).catch(function (err) { return err; })];
                 case 1:
                     validationResult = _a.sent();
-                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                    return [2 /*return*/, formatYupErrors(validationResult)];
                 case 2:
                     // MOCK TRUE
                     if (isMock) {
@@ -885,7 +899,7 @@ var initializeService = function (fetcher, isMock) {
                         }).catch(function (err) { return err; })];
                 case 1:
                     validationResult = _a.sent();
-                    return [2 /*return*/, formatYupErrors(validationResult.errors)];
+                    return [2 /*return*/, formatYupErrors(validationResult)];
                 case 2:
                     // MOCK TRUE
                     if (isMock) {

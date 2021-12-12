@@ -1,4 +1,5 @@
 import { ApiResponse } from "../@types";
+import { ValidationError } from "yup";
 
 const formatAxiosErrors = (
   error: any | void,
@@ -37,14 +38,30 @@ const formatMessageErrors = (message: string): ApiResponse => ({
   message,
 });
 
-const formatYupErrors = (fields: Object): ApiResponse => {
+const formatYupErrors = (errorValidations: ValidationError): ApiResponse => {
   const notification = {
     data: undefined,
     error: true,
-    message: "Erro na chamada",
+    message: "",
   };
 
-  notification.message = Object.values(fields).join(", ");
+  let errorMessage = "Erro na chamada";
+
+  if (errorValidations.inner !== undefined) {
+    errorMessage = errorValidations.inner
+      .map((value: ValidationError) => {
+        return { field: String(value.path), errors: value.errors };
+      })
+      .reduce((prev, curr) => {
+        const cleanErrors = curr.errors.map((error) =>
+          error.replace(curr.field, "")
+        );
+        const joinErrors = `Campo ${curr.field}: ${cleanErrors.join(" ,")}`;
+        return prev === "" ? joinErrors : `${prev}, ${joinErrors}`;
+      }, "");
+  }
+
+  notification.message = errorMessage;
 
   return notification;
 };

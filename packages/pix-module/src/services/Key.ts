@@ -112,7 +112,7 @@ const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
       const validationResult = await PayloadSchema.validate(payload, {
         abortEarly: false,
       }).catch((err) => err);
-      return formatYupErrors(validationResult.errors);
+      return formatYupErrors(validationResult);
     }
 
     // MOCK TRUE
@@ -159,7 +159,7 @@ const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
       const validationResult = await PayloadSchemaUpdate.validate(payload, {
         abortEarly: false,
       }).catch((err) => err);
-      return formatYupErrors(validationResult.errors);
+      return formatYupErrors(validationResult);
     }
 
     // MOCK TRUE
