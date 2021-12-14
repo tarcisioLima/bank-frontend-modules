@@ -906,7 +906,7 @@ var transferMock = {
 
 var PayloadSchema = yup__namespace.object().shape({
     amount: yup__namespace.number().required(REQUIRED_LABEL),
-    receiver_key: yup__namespace.number().required(REQUIRED_LABEL),
+    receiver_key: yup__namespace.string().required(REQUIRED_LABEL),
     type_origin_account: yup__namespace
         .mixed()
         .oneOf(["corrente", "poupança"])

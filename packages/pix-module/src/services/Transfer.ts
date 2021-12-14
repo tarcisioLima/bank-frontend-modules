@@ -23,7 +23,7 @@ export type PostReturn = {
 
 const PayloadSchema = yup.object().shape({
   amount: yup.number().required(REQUIRED_LABEL),
-  receiver_key: yup.number().required(REQUIRED_LABEL),
+  receiver_key: yup.string().required(REQUIRED_LABEL),
   type_origin_account: yup
     .mixed()
     .oneOf(["corrente", "poupança"])
