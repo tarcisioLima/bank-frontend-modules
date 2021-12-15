@@ -2,7 +2,7 @@
 
 var axios = require('axios');
 var Yup = require('yup');
-var locale = require('yup-locale-pt');
+var yupLocalePt = require('yup-locale-pt');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -26,7 +26,6 @@ function _interopNamespace(e) {
 
 var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
 var Yup__namespace = /*#__PURE__*/_interopNamespace(Yup);
-var locale__default = /*#__PURE__*/_interopDefaultLegacy(locale);
 
 var api = function (baseURL, accessToken) {
     if (accessToken === void 0) { accessToken = ""; }
@@ -265,7 +264,9 @@ var chargeMock = [
     },
 ];
 
-Yup__namespace.setLocale(locale__default["default"].pt);
+var x = 10;
+console.log(x);
+Yup__namespace.setLocale(yupLocalePt.pt);
 
 var PayloadSchema$4 = Yup__namespace.object().shape({
     key_id: Yup__namespace.number().required(REQUIRED_LABEL),

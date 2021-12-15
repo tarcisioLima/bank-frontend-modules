@@ -1,7 +1,11 @@
-/* import commonjs from "@rollup/plugin-commonjs"; */
-import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import typescript from "rollup-plugin-typescript2";
 import pkg from "./package.json";
+
+const external = [...Object.keys(pkg.dependencies || {})];
+
+console.log("External dependencies: ", external);
 
 const config = {
   input: "src/index.ts",
@@ -15,9 +19,10 @@ const config = {
       format: "es",
     },
   ],
-  external: [...Object.keys(pkg.dependencies || {})],
+  external,
   plugins: [
-    resolve(),
+    nodeResolve(),
+    commonjs(),
     typescript({
       typescript: require("typescript"),
     }),
