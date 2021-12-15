@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as yup from 'yup';
+import { pt } from 'yup-locale-pt';
 
 var api = function (baseURL, accessToken) {
     if (accessToken === void 0) { accessToken = ""; }
@@ -237,6 +238,8 @@ var chargeMock = [
         qr_code: "https://previews.123rf.com/images/charnsitr/charnsitr2001/charnsitr200100063/139124508-vector-of-qr-code-payment-for-product-mock-up.jpg",
     },
 ];
+
+yup.setLocale(pt);
 
 var PayloadSchema$4 = yup.object().shape({
     key_id: yup.number().required(REQUIRED_LABEL),

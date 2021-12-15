@@ -5,7 +5,7 @@ import formatAxiosErrors, {
 } from "../utils/formatResponse";
 import { AxiosInstance } from "axios";
 import keysMock from "../mocks/keys";
-import * as yup from "yup";
+import yup from "../config/yup";
 import { REQUIRED_LABEL, PAGINATION_LIMIT, KEYTYPES } from "../utils/constants";
 import validateDocNumber from "../utils/docNumberValidator";
 import validateEmail from "../utils/emailValidator";

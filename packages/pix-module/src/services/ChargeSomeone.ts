@@ -5,7 +5,7 @@ import formatAxiosErrors, {
 } from "../utils/formatResponse";
 import { AxiosInstance } from "axios";
 import chargeMock from "../mocks/charge_someone";
-import * as yup from "yup";
+import yup from "../config/yup";
 import { REQUIRED_LABEL, PAGINATION_LIMIT } from "../utils/constants";
 
 export interface Post {

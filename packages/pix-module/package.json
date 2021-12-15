@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "yup-locale-pt": "^0.0.9"
   }
 }

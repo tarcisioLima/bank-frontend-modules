@@ -5,7 +5,7 @@ import formatAxiosErrors, {
 } from "../utils/formatResponse";
 import { AxiosInstance } from "axios";
 import transferMock from "../mocks/transfers";
-import * as yup from "yup";
+import yup from "../config/yup";
 import { REQUIRED_LABEL } from "../utils/constants";
 
 export interface Post {

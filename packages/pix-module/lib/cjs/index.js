@@ -2,6 +2,7 @@
 
 var axios = require('axios');
 var yup = require('yup');
+var yupLocalePt = require('yup-locale-pt');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -262,6 +263,8 @@ var chargeMock = [
         qr_code: "https://previews.123rf.com/images/charnsitr/charnsitr2001/charnsitr200100063/139124508-vector-of-qr-code-payment-for-product-mock-up.jpg",
     },
 ];
+
+yup__namespace.setLocale(yupLocalePt.pt);
 
 var PayloadSchema$4 = yup__namespace.object().shape({
     key_id: yup__namespace.number().required(REQUIRED_LABEL),
