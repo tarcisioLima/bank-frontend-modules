@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as Yup from 'yup';
-import { pt } from 'yup-locale-pt';
+import locale from 'yup-locale-pt';
 
 var api = function (baseURL, accessToken) {
     if (accessToken === void 0) { accessToken = ""; }
@@ -239,7 +239,7 @@ var chargeMock = [
     },
 ];
 
-Yup.setLocale(pt);
+Yup.setLocale(locale.pt);
 
 var PayloadSchema$4 = Yup.object().shape({
     key_id: Yup.number().required(REQUIRED_LABEL),

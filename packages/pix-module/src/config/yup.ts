@@ -1,6 +1,6 @@
 import * as Yup from "yup";
-import { pt } from "yup-locale-pt";
+import locale from "yup-locale-pt";
 
-Yup.setLocale(pt);
+Yup.setLocale(locale.pt);
 
 export default Yup;

@@ -1,3 +1,5 @@
+/* import commonjs from "@rollup/plugin-commonjs"; */
+import resolve from "@rollup/plugin-node-resolve";
 import typescript from "rollup-plugin-typescript2";
 import pkg from "./package.json";
 
@@ -13,8 +15,9 @@ const config = {
       format: "es",
     },
   ],
-  external: [...Object.keys(pkg.peerDependencies || {})],
+  external: [...Object.keys(pkg.dependencies || {})],
   plugins: [
+    resolve(),
     typescript({
       typescript: require("typescript"),
     }),
