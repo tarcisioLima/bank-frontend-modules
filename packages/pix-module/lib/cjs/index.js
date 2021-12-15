@@ -1,7 +1,7 @@
 'use strict';
 
 var axios = require('axios');
-var yup = require('yup');
+var Yup = require('yup');
 var yupLocalePt = require('yup-locale-pt');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -25,7 +25,7 @@ function _interopNamespace(e) {
 }
 
 var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
-var yup__namespace = /*#__PURE__*/_interopNamespace(yup);
+var Yup__namespace = /*#__PURE__*/_interopNamespace(Yup);
 
 var api = function (baseURL, accessToken) {
     if (accessToken === void 0) { accessToken = ""; }
@@ -264,12 +264,12 @@ var chargeMock = [
     },
 ];
 
-yup__namespace.setLocale(yupLocalePt.pt);
+Yup__namespace.setLocale(yupLocalePt.pt);
 
-var PayloadSchema$4 = yup__namespace.object().shape({
-    key_id: yup__namespace.number().required(REQUIRED_LABEL),
-    amount: yup__namespace.number(),
-    description: yup__namespace.string(),
+var PayloadSchema$4 = Yup__namespace.object().shape({
+    key_id: Yup__namespace.number().required(REQUIRED_LABEL),
+    amount: Yup__namespace.number(),
+    description: Yup__namespace.string(),
 });
 var initializeService$5 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -502,8 +502,8 @@ var mobilePhone = function (phone) {
     return clean.length !== phoneLength;
 };
 
-var PayloadSchema$3 = yup__namespace.object().shape({
-    key: yup__namespace.string().test("key-error", "", function (value) {
+var PayloadSchema$3 = Yup__namespace.object().shape({
+    key: Yup__namespace.string().test("key-error", "", function (value) {
         var type = this.parent.key_type;
         var _a = this, path = _a.path, createError = _a.createError;
         var isValid = false;
@@ -530,8 +530,8 @@ var PayloadSchema$3 = yup__namespace.object().shape({
                 message: "Chave do tipo ".concat(type, " n\u00E3o est\u00E1 no formato v\u00E1lido"),
             }));
     }),
-    key_type: yup__namespace.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
-    type_origin_account: yup__namespace
+    key_type: Yup__namespace.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
+    type_origin_account: Yup__namespace
         .mixed()
         .oneOf(["corrente", "poupança"])
         .required(REQUIRED_LABEL),
@@ -614,8 +614,8 @@ var initializeService$4 = function (fetcher, isMock) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    PayloadSchemaUpdate = yup__namespace.object().shape({
-                        type_origin_account: yup__namespace.mixed().oneOf(["corrente", "poupança"]),
+                    PayloadSchemaUpdate = Yup__namespace.object().shape({
+                        type_origin_account: Yup__namespace.mixed().oneOf(["corrente", "poupança"]),
                     });
                     if (!!PayloadSchema$3.isValidSync(payload)) return [3 /*break*/, 2];
                     return [4 /*yield*/, PayloadSchemaUpdate.validate(payload, {
@@ -694,9 +694,9 @@ var limitsMock = {
     updated_at: "06-06-2021",
 };
 
-var PayloadSchema$2 = yup__namespace.object().shape({
-    limit_day_amount: yup__namespace.number().required(REQUIRED_LABEL),
-    limit_night_amount: yup__namespace.number().required(REQUIRED_LABEL),
+var PayloadSchema$2 = Yup__namespace.object().shape({
+    limit_day_amount: Yup__namespace.number().required(REQUIRED_LABEL),
+    limit_night_amount: Yup__namespace.number().required(REQUIRED_LABEL),
 });
 var initializeService$3 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -780,8 +780,8 @@ var payqrcodeMock = {
     created_at: "2021-10-12",
 };
 
-var PayloadSchema$1 = yup__namespace.object().shape({
-    code: yup__namespace.string().required(REQUIRED_LABEL),
+var PayloadSchema$1 = Yup__namespace.object().shape({
+    code: Yup__namespace.string().required(REQUIRED_LABEL),
 });
 var initializeService$2 = function (fetcher, isMock) {
     var post = function (payload) { return __awaiter(void 0, void 0, void 0, function () {
@@ -907,10 +907,10 @@ var transferMock = {
     updated_at: "2021-06-12",
 };
 
-var PayloadSchema = yup__namespace.object().shape({
-    amount: yup__namespace.number().required(REQUIRED_LABEL),
-    receiver_key: yup__namespace.string().required(REQUIRED_LABEL),
-    type_origin_account: yup__namespace
+var PayloadSchema = Yup__namespace.object().shape({
+    amount: Yup__namespace.number().required(REQUIRED_LABEL),
+    receiver_key: Yup__namespace.string().required(REQUIRED_LABEL),
+    type_origin_account: Yup__namespace
         .mixed()
         .oneOf(["corrente", "poupança"])
         .required(REQUIRED_LABEL),

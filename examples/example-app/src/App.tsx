@@ -33,7 +33,7 @@ function App() {
     const transfer = await services.transfer.post({
       amount: 20,
       receiver_key: 10,
-      type_origin_account: "corrente",
+      type_origin_account: "correntes",
     });
     console.log("# Extract: ", extract);
     console.log("# Charge: ", charge);

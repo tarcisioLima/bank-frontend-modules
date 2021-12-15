@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as yup from 'yup';
+import * as Yup from 'yup';
 import { pt } from 'yup-locale-pt';
 
 var api = function (baseURL, accessToken) {
@@ -239,12 +239,12 @@ var chargeMock = [
     },
 ];
 
-yup.setLocale(pt);
+Yup.setLocale(pt);
 
-var PayloadSchema$4 = yup.object().shape({
-    key_id: yup.number().required(REQUIRED_LABEL),
-    amount: yup.number(),
-    description: yup.string(),
+var PayloadSchema$4 = Yup.object().shape({
+    key_id: Yup.number().required(REQUIRED_LABEL),
+    amount: Yup.number(),
+    description: Yup.string(),
 });
 var initializeService$5 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -477,8 +477,8 @@ var mobilePhone = function (phone) {
     return clean.length !== phoneLength;
 };
 
-var PayloadSchema$3 = yup.object().shape({
-    key: yup.string().test("key-error", "", function (value) {
+var PayloadSchema$3 = Yup.object().shape({
+    key: Yup.string().test("key-error", "", function (value) {
         var type = this.parent.key_type;
         var _a = this, path = _a.path, createError = _a.createError;
         var isValid = false;
@@ -505,8 +505,8 @@ var PayloadSchema$3 = yup.object().shape({
                 message: "Chave do tipo ".concat(type, " n\u00E3o est\u00E1 no formato v\u00E1lido"),
             }));
     }),
-    key_type: yup.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
-    type_origin_account: yup
+    key_type: Yup.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
+    type_origin_account: Yup
         .mixed()
         .oneOf(["corrente", "poupança"])
         .required(REQUIRED_LABEL),
@@ -589,8 +589,8 @@ var initializeService$4 = function (fetcher, isMock) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    PayloadSchemaUpdate = yup.object().shape({
-                        type_origin_account: yup.mixed().oneOf(["corrente", "poupança"]),
+                    PayloadSchemaUpdate = Yup.object().shape({
+                        type_origin_account: Yup.mixed().oneOf(["corrente", "poupança"]),
                     });
                     if (!!PayloadSchema$3.isValidSync(payload)) return [3 /*break*/, 2];
                     return [4 /*yield*/, PayloadSchemaUpdate.validate(payload, {
@@ -669,9 +669,9 @@ var limitsMock = {
     updated_at: "06-06-2021",
 };
 
-var PayloadSchema$2 = yup.object().shape({
-    limit_day_amount: yup.number().required(REQUIRED_LABEL),
-    limit_night_amount: yup.number().required(REQUIRED_LABEL),
+var PayloadSchema$2 = Yup.object().shape({
+    limit_day_amount: Yup.number().required(REQUIRED_LABEL),
+    limit_night_amount: Yup.number().required(REQUIRED_LABEL),
 });
 var initializeService$3 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -755,8 +755,8 @@ var payqrcodeMock = {
     created_at: "2021-10-12",
 };
 
-var PayloadSchema$1 = yup.object().shape({
-    code: yup.string().required(REQUIRED_LABEL),
+var PayloadSchema$1 = Yup.object().shape({
+    code: Yup.string().required(REQUIRED_LABEL),
 });
 var initializeService$2 = function (fetcher, isMock) {
     var post = function (payload) { return __awaiter(void 0, void 0, void 0, function () {
@@ -882,10 +882,10 @@ var transferMock = {
     updated_at: "2021-06-12",
 };
 
-var PayloadSchema = yup.object().shape({
-    amount: yup.number().required(REQUIRED_LABEL),
-    receiver_key: yup.string().required(REQUIRED_LABEL),
-    type_origin_account: yup
+var PayloadSchema = Yup.object().shape({
+    amount: Yup.number().required(REQUIRED_LABEL),
+    receiver_key: Yup.string().required(REQUIRED_LABEL),
+    type_origin_account: Yup
         .mixed()
         .oneOf(["corrente", "poupança"])
         .required(REQUIRED_LABEL),

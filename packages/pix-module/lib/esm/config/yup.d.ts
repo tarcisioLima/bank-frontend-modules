@@ -1,2 +1,2 @@
-import * as yup from "yup";
-export default yup;
+import * as Yup from "yup";
+export default Yup;
