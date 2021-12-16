@@ -1,7 +1,8 @@
 import { AxiosInstance } from "axios";
 export interface Post {
     amount: number;
-    receiver_key: number;
+    receiver_key: string | number;
+    type_receiver_key: string;
     type_origin_account: string;
 }
 export declare type PostReturn = {

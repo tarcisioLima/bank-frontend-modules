@@ -32,8 +32,9 @@ function App() {
     const receipts = await services.receipt.get();
     const transfer = await services.transfer.post({
       amount: 20,
-      receiver_key: 10,
-      type_origin_account: "correntes",
+      receiver_key: "test@test.com",
+      type_receiver_key: "EMAIL",
+      type_origin_account: "corrente",
     });
     console.log("# Extract: ", extract);
     console.log("# Charge: ", charge);

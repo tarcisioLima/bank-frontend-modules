@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 export interface Post {
-    key?: any;
+    key?: string | number;
     key_type: string;
     type_origin_account: string;
 }
@@ -17,7 +17,7 @@ export declare type Put = {
 };
 export declare type PutReturn = GetReturn;
 declare const initializeService: (fetcher: AxiosInstance, isMock: boolean) => {
-    get: () => Promise<import("../@types").ApiResponse<GetReturn[]> | import("../@types").ApiResponse<undefined>>;
+    get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<GetReturn[]>>;
     post: (payload: Post) => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<GetReturn>>;
     put: (key_id: number | string, payload: Put) => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<GetReturn>>;
     remove: (key_id: number | string) => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<GetReturn>>;

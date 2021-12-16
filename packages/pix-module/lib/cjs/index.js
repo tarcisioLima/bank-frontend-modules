@@ -264,8 +264,6 @@ var chargeMock = [
     },
 ];
 
-var x = 10;
-console.log(x);
 Yup__namespace.setLocale(yupLocalePt.pt);
 
 var PayloadSchema$4 = Yup__namespace.object().shape({
@@ -504,28 +502,33 @@ var mobilePhone = function (phone) {
     return clean.length !== phoneLength;
 };
 
+var keyTypeValidator = function (type, value) {
+    var isValid = false;
+    if (!type) {
+        isValid = true;
+    }
+    switch (type) {
+        case "EMAIL":
+            isValid = validateEmail(value);
+            break;
+        case "DOCUMENT_NUMBER":
+            isValid = validateDocNumber(value);
+            break;
+        case "PHONE":
+            isValid = mobilePhone(value);
+            break;
+        case "RANDOM":
+            isValid = true;
+            break;
+    }
+    return isValid;
+};
+
 var PayloadSchema$3 = Yup__namespace.object().shape({
     key: Yup__namespace.string().test("key-error", "", function (value) {
         var type = this.parent.key_type;
         var _a = this, path = _a.path, createError = _a.createError;
-        var isValid = false;
-        if (!type) {
-            isValid = true;
-        }
-        switch (type) {
-            case "EMAIL":
-                isValid = validateEmail(value);
-                break;
-            case "DOCUMENT_NUMBER":
-                isValid = validateDocNumber(value);
-                break;
-            case "PHONE":
-                isValid = mobilePhone(value);
-                break;
-            case "RANDOM":
-                isValid = true;
-                break;
-        }
+        var isValid = keyTypeValidator(type, value);
         return (isValid ||
             createError({
                 path: path,
@@ -911,7 +914,19 @@ var transferMock = {
 
 var PayloadSchema = Yup__namespace.object().shape({
     amount: Yup__namespace.number().required(REQUIRED_LABEL),
-    receiver_key: Yup__namespace.string().required(REQUIRED_LABEL),
+    receiver_key: Yup__namespace.string().test("key-error", "", function (value) {
+        var type = this.parent.type_receiver_key;
+        var _a = this, path = _a.path, createError = _a.createError;
+        var isValid = keyTypeValidator(type, value);
+        console.log("TYPE");
+        console.log("isValid: ", isValid ? "VALID" : "NOT VALID");
+        return (isValid ||
+            createError({
+                path: path,
+                message: "Chave do tipo ".concat(type, " n\u00E3o est\u00E1 no formato v\u00E1lido"),
+            }));
+    }),
+    type_receiver_key: Yup__namespace.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
     type_origin_account: Yup__namespace
         .mixed()
         .oneOf(["corrente", "poupança"])

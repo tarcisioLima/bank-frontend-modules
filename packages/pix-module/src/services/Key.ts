@@ -7,12 +7,10 @@ import { AxiosInstance } from "axios";
 import keysMock from "../mocks/keys";
 import yup from "../config/yup";
 import { REQUIRED_LABEL, PAGINATION_LIMIT, KEYTYPES } from "../utils/constants";
-import validateDocNumber from "../utils/docNumberValidator";
-import validateEmail from "../utils/emailValidator";
-import validateMobilePhone from "../utils/mobilePhoneValidator";
+import keyTypeValidator from "../utils/keyTypeValidator";
 
 export interface Post {
-  key?: any;
+  key?: string | number;
   key_type: string;
   type_origin_account: string;
 }
@@ -39,26 +37,7 @@ const PayloadSchema = yup.object().shape({
     const { key_type: type } = this.parent;
     const { path, createError } = this;
 
-    let isValid = false;
-
-    if (!type) {
-      isValid = true;
-    }
-
-    switch (type) {
-      case "EMAIL":
-        isValid = validateEmail(value);
-        break;
-      case "DOCUMENT_NUMBER":
-        isValid = validateDocNumber(value);
-        break;
-      case "PHONE":
-        isValid = validateMobilePhone(value);
-        break;
-      case "RANDOM":
-        isValid = true;
-        break;
-    }
+    const isValid = keyTypeValidator(type, value);
 
     return (
       isValid ||
