@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as Yup from 'yup';
 import { pt } from 'yup-locale-pt';
+import { setSeconds, setMinutes, setHours, isDate, parseISO, isValid, isBefore } from 'date-fns';
 
 var api = function (baseURL, accessToken) {
     if (accessToken === void 0) { accessToken = ""; }
@@ -149,6 +150,7 @@ var formatResponse = function (data, error, message) { return ({
 var PAGINATION_LIMIT = 100;
 var REQUIRED_LABEL = "obrigatório";
 var KEYTYPES = ["PHONE", "DOCUMENT_NUMBER", "EMAIL", "RANDOM"];
+var ACCOUNTTYPES = ["corrente", "poupança"];
 
 var extractMock = [
     {
@@ -185,7 +187,7 @@ var extractMock = [
     },
 ];
 
-var initializeService$6 = function (fetcher, isMock) {
+var initializeService$7 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
         var data, err_1;
         return __generator(this, function (_a) {
@@ -241,12 +243,12 @@ var chargeMock = [
 
 Yup.setLocale(pt);
 
-var PayloadSchema$4 = Yup.object().shape({
+var PayloadSchema$5 = Yup.object().shape({
     key_id: Yup.number().required(REQUIRED_LABEL),
     amount: Yup.number(),
     description: Yup.string(),
 });
-var initializeService$5 = function (fetcher, isMock) {
+var initializeService$6 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
         var data, err_1;
         return __generator(this, function (_a) {
@@ -285,8 +287,8 @@ var initializeService$5 = function (fetcher, isMock) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!PayloadSchema$4.isValidSync(payload)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, PayloadSchema$4.validate(payload, {
+                    if (!!PayloadSchema$5.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$5.validate(payload, {
                             abortEarly: false,
                         }).catch(function (err) { return err; })];
                 case 1:
@@ -499,7 +501,7 @@ var keyTypeValidator = function (type, value) {
     return isValid;
 };
 
-var PayloadSchema$3 = Yup.object().shape({
+var PayloadSchema$4 = Yup.object().shape({
     key: Yup.string().test("key-error", "", function (value) {
         var type = this.parent.key_type;
         var _a = this, path = _a.path, createError = _a.createError;
@@ -516,7 +518,7 @@ var PayloadSchema$3 = Yup.object().shape({
         .oneOf(["corrente", "poupança"])
         .required(REQUIRED_LABEL),
 });
-var initializeService$4 = function (fetcher, isMock) {
+var initializeService$5 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
         var data, err_1;
         return __generator(this, function (_a) {
@@ -555,8 +557,8 @@ var initializeService$4 = function (fetcher, isMock) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    if (!!PayloadSchema$3.isValidSync(payload)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, PayloadSchema$3.validate(payload, {
+                    if (!!PayloadSchema$4.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$4.validate(payload, {
                             abortEarly: false,
                         }).catch(function (err) { return err; })];
                 case 1:
@@ -597,7 +599,7 @@ var initializeService$4 = function (fetcher, isMock) {
                     PayloadSchemaUpdate = Yup.object().shape({
                         type_origin_account: Yup.mixed().oneOf(["corrente", "poupança"]),
                     });
-                    if (!!PayloadSchema$3.isValidSync(payload)) return [3 /*break*/, 2];
+                    if (!!PayloadSchema$4.isValidSync(payload)) return [3 /*break*/, 2];
                     return [4 /*yield*/, PayloadSchemaUpdate.validate(payload, {
                             abortEarly: false,
                         }).catch(function (err) { return err; })];
@@ -674,11 +676,11 @@ var limitsMock = {
     updated_at: "06-06-2021",
 };
 
-var PayloadSchema$2 = Yup.object().shape({
+var PayloadSchema$3 = Yup.object().shape({
     limit_day_amount: Yup.number().required(REQUIRED_LABEL),
     limit_night_amount: Yup.number().required(REQUIRED_LABEL),
 });
-var initializeService$3 = function (fetcher, isMock) {
+var initializeService$4 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
         var data, err_1;
         return __generator(this, function (_a) {
@@ -713,8 +715,8 @@ var initializeService$3 = function (fetcher, isMock) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!PayloadSchema$2.isValidSync(payload)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, PayloadSchema$2.validate(payload, {
+                    if (!!PayloadSchema$3.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$3.validate(payload, {
                             abortEarly: false,
                         }).catch(function (err) { return err; })];
                 case 1:
@@ -760,17 +762,59 @@ var payqrcodeMock = {
     created_at: "2021-10-12",
 };
 
-var PayloadSchema$1 = Yup.object().shape({
+var dateTransacValidator = function (sentDate) {
+    var today = setSeconds(setMinutes(setHours(new Date(), 0), 0), 0);
+    var result = {
+        isValid: true,
+        message: "formato inv\u00E1lido de data, informe uma data no formato: YYYY-MM-DD",
+    };
+    /* IF NO FIELD IS SENT, SO IS TRUE BECAUSE IS NOT REQUIRED */
+    if (typeof sentDate !== "string") {
+        return result;
+    }
+    if (!isDate(parseISO(sentDate))) {
+        result.isValid = false;
+        return result;
+    }
+    var parsedDate = parseISO(sentDate);
+    if (!isValid(parsedDate)) {
+        result.isValid = false;
+        return result;
+    }
+    if (String(parsedDate) === String(today)) {
+        result.isValid = true;
+        return result;
+    }
+    else if (isBefore(parsedDate, today)) {
+        result.isValid = false;
+        result.message = "data passada não é aceita";
+        return result;
+    }
+    return result;
+};
+
+var PayloadSchema$2 = Yup.object().shape({
     code: Yup.string().required(REQUIRED_LABEL),
+    amount: Yup.number(),
+    payment_date: Yup.string().test("date-error", "", function (value) {
+        var _a = this, path = _a.path, createError = _a.createError;
+        var validDate = dateTransacValidator(value);
+        return (validDate.isValid ||
+            createError({
+                path: path,
+                message: validDate.message,
+            }));
+    }),
+    type_origin_account: Yup.mixed().oneOf(ACCOUNTTYPES).required(REQUIRED_LABEL),
 });
-var initializeService$2 = function (fetcher, isMock) {
+var initializeService$3 = function (fetcher, isMock) {
     var post = function (payload) { return __awaiter(void 0, void 0, void 0, function () {
         var validationResult, id, created_at, authentication, data, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!PayloadSchema$1.isValidSync(payload)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, PayloadSchema$1.validate(payload, {
+                    if (!!PayloadSchema$2.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$2.validate(payload, {
                             abortEarly: false,
                         }).catch(function (err) { return err; })];
                 case 1:
@@ -787,6 +831,64 @@ var initializeService$2 = function (fetcher, isMock) {
                     _a.trys.push([3, 5, , 6]);
                     return [4 /*yield*/, fetcher.request({
                             url: "/pay-qrcode",
+                            method: "post",
+                            data: payload,
+                        })];
+                case 4:
+                    data = (_a.sent()).data;
+                    if (!data) {
+                        return [2 /*return*/, formatMessageErrors("Erro na chamada")];
+                    }
+                    return [2 /*return*/, formatResponse(data, false, "Criado com sucesso")];
+                case 5:
+                    err_1 = _a.sent();
+                    return [2 /*return*/, formatAxiosErrors(err_1)];
+                case 6: return [2 /*return*/];
+            }
+        });
+    }); };
+    return {
+        post: post,
+    };
+};
+
+var checkqrcodeMock = {
+    id: 1,
+    code: "00020126580014BR.GOV.BCB.PIX01365ba2ee21-5b4c-4f00-82c1-499b2232052f52040000530398654041.005802BR5925Tarcisio Thallys da Costa6009SAO PAULO61080540900062070503***63045390",
+    receiver_name: "Tarcísio Dev",
+    receiver_document: "592.590.750-76",
+    receiver_bank: "NU PAGAMENTOS - IP",
+    description: "Pagamento da conta de luz",
+    amount: 1.5,
+};
+
+var PayloadSchema$1 = Yup.object().shape({
+    code: Yup.string().required(REQUIRED_LABEL),
+});
+var initializeService$2 = function (fetcher, isMock) {
+    var post = function (payload) { return __awaiter(void 0, void 0, void 0, function () {
+        var validationResult, id, amount, code, description, receiver_bank, receiver_document, receiver_name, data, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!!PayloadSchema$1.isValidSync(payload)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, PayloadSchema$1.validate(payload, {
+                            abortEarly: false,
+                        }).catch(function (err) { return err; })];
+                case 1:
+                    validationResult = _a.sent();
+                    return [2 /*return*/, formatYupErrors(validationResult)];
+                case 2:
+                    // MOCK TRUE
+                    if (isMock) {
+                        id = checkqrcodeMock.id, amount = checkqrcodeMock.amount, code = checkqrcodeMock.code, description = checkqrcodeMock.description, receiver_bank = checkqrcodeMock.receiver_bank, receiver_document = checkqrcodeMock.receiver_document, receiver_name = checkqrcodeMock.receiver_name;
+                        return [2 /*return*/, formatResponse(__assign(__assign({ id: id }, payload), { amount: amount, description: description, code: code, receiver_bank: receiver_bank, receiver_document: receiver_document, receiver_name: receiver_name }), false, "Criado com sucesso")];
+                    }
+                    _a.label = 3;
+                case 3:
+                    _a.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, fetcher.request({
+                            url: "/check-qrcode",
                             method: "post",
                             data: payload,
                         })];
@@ -893,8 +995,6 @@ var PayloadSchema = Yup.object().shape({
         var type = this.parent.type_receiver_key;
         var _a = this, path = _a.path, createError = _a.createError;
         var isValid = keyTypeValidator(type, value);
-        console.log("TYPE");
-        console.log("isValid: ", isValid ? "VALID" : "NOT VALID");
         return (isValid ||
             createError({
                 path: path,
@@ -902,10 +1002,7 @@ var PayloadSchema = Yup.object().shape({
             }));
     }),
     type_receiver_key: Yup.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
-    type_origin_account: Yup
-        .mixed()
-        .oneOf(["corrente", "poupança"])
-        .required(REQUIRED_LABEL),
+    type_origin_account: Yup.mixed().oneOf(ACCOUNTTYPES).required(REQUIRED_LABEL),
 });
 var initializeService = function (fetcher, isMock) {
     var post = function (payload) { return __awaiter(void 0, void 0, void 0, function () {
@@ -953,11 +1050,12 @@ var initializeService = function (fetcher, isMock) {
 };
 
 var all = function (fetcher, isMock) {
-    var extract = initializeService$6(fetcher, isMock);
-    var charge_someone = initializeService$5(fetcher, isMock);
-    var key = initializeService$4(fetcher, isMock);
-    var limit = initializeService$3(fetcher, isMock);
-    var payqrcode = initializeService$2(fetcher, isMock);
+    var extract = initializeService$7(fetcher, isMock);
+    var charge_someone = initializeService$6(fetcher, isMock);
+    var key = initializeService$5(fetcher, isMock);
+    var limit = initializeService$4(fetcher, isMock);
+    var payqrcode = initializeService$3(fetcher, isMock);
+    var checkqrcode = initializeService$2(fetcher, isMock);
     var receipt = initializeService$1(fetcher, isMock);
     var transfer = initializeService(fetcher, isMock);
     return {
@@ -965,6 +1063,7 @@ var all = function (fetcher, isMock) {
         charge_someone: charge_someone,
         key: key,
         limit: limit,
+        checkqrcode: checkqrcode,
         payqrcode: payqrcode,
         receipt: receipt,
         transfer: transfer,

@@ -17,6 +17,9 @@ declare const all: (fetcher: AxiosInstance, isMock: boolean) => {
         get: () => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Limit").GetReturn>>;
         post: (payload: import("./Limit").Post) => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./Limit").GetReturn>>;
     };
+    checkqrcode: {
+        post: (payload: import("./CheckQRCode").Post) => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./CheckQRCode").PostReturn>>;
+    };
     payqrcode: {
         post: (payload: import("./PayQRCode").Post) => Promise<import("../@types").ApiResponse<undefined> | import("../@types").ApiResponse<import("./PayQRCode").PostReturn>>;
     };

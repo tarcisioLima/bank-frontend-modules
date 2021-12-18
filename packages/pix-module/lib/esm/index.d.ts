@@ -24,6 +24,9 @@ declare const PixModule: (config: InitPixModule) => {
             get: () => Promise<import("./@types").ApiResponse<undefined> | import("./@types").ApiResponse<import("./services/Limit").GetReturn>>;
             post: (payload: import("./services/Limit").Post) => Promise<import("./@types").ApiResponse<undefined> | import("./@types").ApiResponse<import("./services/Limit").GetReturn>>;
         };
+        checkqrcode: {
+            post: (payload: import("./services/CheckQRCode").Post) => Promise<import("./@types").ApiResponse<undefined> | import("./@types").ApiResponse<import("./services/CheckQRCode").PostReturn>>;
+        };
         payqrcode: {
             post: (payload: import("./services/PayQRCode").Post) => Promise<import("./@types").ApiResponse<undefined> | import("./@types").ApiResponse<import("./services/PayQRCode").PostReturn>>;
         };

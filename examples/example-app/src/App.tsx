@@ -22,13 +22,20 @@ function App() {
     const key = await services.key.post({
       key_type: "EMAIL",
       type_origin_account: "corrente",
-      key: "EMAIL",
+      key: "test@test.com",
     });
     const limit = await services.limit.post({
       limit_day_amount: 5000,
       limit_night_amount: 2000,
     });
-    const payqrcode = await services.payqrcode.post({ code: "testcode" });
+    const checkqrcode = await services.checkqrcode.post({
+      code: "testcode",
+    });
+    const payqrcode = await services.payqrcode.post({
+      code: "testcode",
+      type_origin_account: "poupança",
+      payment_date: "2021-12-20",
+    });
     const receipts = await services.receipt.get();
     const transfer = await services.transfer.post({
       amount: 20,
@@ -41,8 +48,10 @@ function App() {
     console.log("# Key: ", key);
     console.log("# Limit: ", limit);
     console.log("# Receipt: ", receipts);
-    console.log("# Pay QR Code: ", payqrcode);
+    console.log("# Check QR Code: ", checkqrcode);
+
     console.log("# Transfer: ", transfer);
+    console.log("# Pay QR Code: ", payqrcode);
   };
 
   useEffect(() => {

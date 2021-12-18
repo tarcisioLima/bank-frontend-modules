@@ -3,6 +3,7 @@ export const REQUIRED_LABEL = "obrigatório";
 export const INVALID_FORMAT = "formato inválido";
 
 export const KEYTYPES = ["PHONE", "DOCUMENT_NUMBER", "EMAIL", "RANDOM"];
+export const ACCOUNTTYPES = ["corrente", "poupança"];
 
 export const CpfCnpjRegex =
   /([0-9]{2}[.]?[0-9]{3}[.]?[0-9]{3}[/]?[0-9]{4}[-]?[0-9]{2})|([0-9]{3}[.]?[0-9]{3}[.]?[0-9]{3}[-]?[0-9]{2})/g;

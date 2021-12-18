@@ -4,41 +4,25 @@ import formatAxiosErrors, {
   formatYupErrors,
 } from "../utils/formatResponse";
 import { AxiosInstance } from "axios";
-import payqrcodeMock from "../mocks/payqrcode";
+import checkqrcodeMock from "../mocks/checkqrcode";
 import yup from "../config/yup";
-import { REQUIRED_LABEL, ACCOUNTTYPES } from "../utils/constants";
-import dateTransacValidator from "../utils/dateTransacValidator";
+import { REQUIRED_LABEL } from "../utils/constants";
 
 export interface Post {
   code: string;
-  type_origin_account: string;
-  payment_date?: string;
-  amount?: number;
 }
 
 export type PostReturn = {
-  id: any;
-  authentication: string;
-  created_at: string;
+  id?: any;
+  receiver_name: string;
+  receiver_document: string;
+  receiver_bank: string;
+  description?: string;
+  amount?: number;
 } & Post;
 
 const PayloadSchema = yup.object().shape({
   code: yup.string().required(REQUIRED_LABEL),
-  amount: yup.number(),
-  payment_date: yup.string().test("date-error", "", function (value: string) {
-    const { path, createError } = this;
-
-    const validDate = dateTransacValidator(value);
-
-    return (
-      validDate.isValid ||
-      createError({
-        path,
-        message: validDate.message,
-      })
-    );
-  }),
-  type_origin_account: yup.mixed().oneOf(ACCOUNTTYPES).required(REQUIRED_LABEL),
 });
 
 const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
@@ -53,13 +37,25 @@ const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
 
     // MOCK TRUE
     if (isMock) {
-      const { id, created_at, authentication } = payqrcodeMock;
+      const {
+        id,
+        amount,
+        code,
+        description,
+        receiver_bank,
+        receiver_document,
+        receiver_name,
+      } = checkqrcodeMock;
       return formatResponse<PostReturn>(
         {
           id,
           ...payload,
-          authentication,
-          created_at,
+          amount,
+          description,
+          code,
+          receiver_bank,
+          receiver_document,
+          receiver_name,
         },
         false,
         "Criado com sucesso"
@@ -69,7 +65,7 @@ const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
     // MOCK FALSE
     try {
       const { data } = await fetcher.request<PostReturn>({
-        url: `/pay-qrcode`,
+        url: `/check-qrcode`,
         method: "post",
         data: payload,
       });

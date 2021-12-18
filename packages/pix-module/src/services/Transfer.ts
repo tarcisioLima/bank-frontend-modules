@@ -6,7 +6,7 @@ import formatAxiosErrors, {
 import { AxiosInstance } from "axios";
 import transferMock from "../mocks/transfers";
 import yup from "../config/yup";
-import { REQUIRED_LABEL, KEYTYPES } from "../utils/constants";
+import { REQUIRED_LABEL, KEYTYPES, ACCOUNTTYPES } from "../utils/constants";
 import keyTypeValidator from "../utils/keyTypeValidator";
 
 export interface Post {
@@ -30,8 +30,6 @@ const PayloadSchema = yup.object().shape({
     const { path, createError } = this;
 
     const isValid = keyTypeValidator(type, value);
-    console.log("TYPE");
-    console.log("isValid: ", isValid ? "VALID" : "NOT VALID");
 
     return (
       isValid ||
@@ -42,10 +40,7 @@ const PayloadSchema = yup.object().shape({
     );
   }),
   type_receiver_key: yup.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
-  type_origin_account: yup
-    .mixed()
-    .oneOf(["corrente", "poupança"])
-    .required(REQUIRED_LABEL),
+  type_origin_account: yup.mixed().oneOf(ACCOUNTTYPES).required(REQUIRED_LABEL),
 });
 
 const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
