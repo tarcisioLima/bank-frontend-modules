@@ -159,7 +159,7 @@ var formatYupErrors = function (errorValidations) {
             var cleanErrors = curr.errors.map(function (error) {
                 return error.replace(curr.field, "");
             });
-            var joinErrors = "Campo ".concat(curr.field, ": ").concat(cleanErrors.join(" ,"));
+            var joinErrors = "Campo ".concat(curr.field, ": ").concat(cleanErrors.join(" ,")).replace(/  +/g, " ");
             return prev === "" ? joinErrors : "".concat(prev, ", ").concat(joinErrors);
         }, "");
     }
@@ -538,10 +538,7 @@ var PayloadSchema$4 = Yup__namespace.object().shape({
             }));
     }),
     key_type: Yup__namespace.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
-    type_origin_account: Yup__namespace
-        .mixed()
-        .oneOf(["corrente", "poupança"])
-        .required(REQUIRED_LABEL),
+    type_origin_account: Yup__namespace.mixed().oneOf(ACCOUNTTYPES).required(REQUIRED_LABEL),
 });
 var initializeService$5 = function (fetcher, isMock) {
     var get = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -622,19 +619,21 @@ var initializeService$5 = function (fetcher, isMock) {
             switch (_a.label) {
                 case 0:
                     PayloadSchemaUpdate = Yup__namespace.object().shape({
-                        type_origin_account: Yup__namespace.mixed().oneOf(["corrente", "poupança"]),
+                        type_origin_account: Yup__namespace.mixed().oneOf(ACCOUNTTYPES),
                     });
-                    if (!!PayloadSchema$4.isValidSync(payload)) return [3 /*break*/, 2];
+                    if (!!PayloadSchemaUpdate.isValidSync(payload)) return [3 /*break*/, 2];
                     return [4 /*yield*/, PayloadSchemaUpdate.validate(payload, {
                             abortEarly: false,
                         }).catch(function (err) { return err; })];
                 case 1:
                     validationResult = _a.sent();
+                    console.log("MOCKTRUE IN PUT KEY validationResult: ", validationResult);
                     return [2 /*return*/, formatYupErrors(validationResult)];
                 case 2:
                     // MOCK TRUE
                     if (isMock) {
-                        return [2 /*return*/, formatResponse(__assign(__assign(__assign({}, keysMock[0]), payload), { id: key_id }), false, "Criado com sucesso")];
+                        console.log("MOCKTRUE IN PUT KEY: ");
+                        return [2 /*return*/, formatResponse(__assign(__assign(__assign({}, keysMock[0]), payload), { id: key_id }), false, "Atualizado com sucesso")];
                     }
                     _a.label = 3;
                 case 3:

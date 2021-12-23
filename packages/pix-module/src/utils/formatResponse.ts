@@ -56,7 +56,9 @@ const formatYupErrors = (errorValidations: ValidationError): ApiResponse => {
         const cleanErrors = curr.errors.map((error) =>
           error.replace(curr.field, "")
         );
-        const joinErrors = `Campo ${curr.field}: ${cleanErrors.join(" ,")}`;
+        const joinErrors = `Campo ${curr.field}: ${cleanErrors.join(
+          " ,"
+        )}`.replace(/  +/g, " ");
         return prev === "" ? joinErrors : `${prev}, ${joinErrors}`;
       }, "");
   }

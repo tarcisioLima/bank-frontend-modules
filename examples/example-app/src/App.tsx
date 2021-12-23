@@ -43,9 +43,15 @@ function App() {
       type_receiver_key: "EMAIL",
       type_origin_account: "corrente",
     });
+
+    const keyPUT = await services.key.put(1, {
+      type_origin_account: "poupança",
+    });
+
     console.log("# Extract: ", extract);
     console.log("# Charge: ", charge);
     console.log("# Key: ", key);
+    console.log("# Key PUT: ", keyPUT);
     console.log("# Limit: ", limit);
     console.log("# Receipt: ", receipts);
     console.log("# Check QR Code: ", checkqrcode);

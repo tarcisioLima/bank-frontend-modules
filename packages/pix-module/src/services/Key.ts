@@ -6,7 +6,12 @@ import formatAxiosErrors, {
 import { AxiosInstance } from "axios";
 import keysMock from "../mocks/keys";
 import yup from "../config/yup";
-import { REQUIRED_LABEL, PAGINATION_LIMIT, KEYTYPES } from "../utils/constants";
+import {
+  REQUIRED_LABEL,
+  PAGINATION_LIMIT,
+  KEYTYPES,
+  ACCOUNTTYPES,
+} from "../utils/constants";
 import keyTypeValidator from "../utils/keyTypeValidator";
 
 export interface Post {
@@ -48,10 +53,7 @@ const PayloadSchema = yup.object().shape({
     );
   }),
   key_type: yup.mixed().oneOf(KEYTYPES).required(REQUIRED_LABEL),
-  type_origin_account: yup
-    .mixed()
-    .oneOf(["corrente", "poupança"])
-    .required(REQUIRED_LABEL),
+  type_origin_account: yup.mixed().oneOf(ACCOUNTTYPES).required(REQUIRED_LABEL),
 });
 
 const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
@@ -130,19 +132,21 @@ const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
 
   const put = async (key_id: number | string, payload: Put) => {
     const PayloadSchemaUpdate = yup.object().shape({
-      type_origin_account: yup.mixed().oneOf(["corrente", "poupança"]),
+      type_origin_account: yup.mixed().oneOf(ACCOUNTTYPES),
     });
 
     // YUP VALIDATION
-    if (!PayloadSchema.isValidSync(payload)) {
+    if (!PayloadSchemaUpdate.isValidSync(payload)) {
       const validationResult = await PayloadSchemaUpdate.validate(payload, {
         abortEarly: false,
       }).catch((err) => err);
+      console.log("MOCKTRUE IN PUT KEY validationResult: ", validationResult);
       return formatYupErrors(validationResult);
     }
 
     // MOCK TRUE
     if (isMock) {
+      console.log("MOCKTRUE IN PUT KEY: ");
       return formatResponse<PutReturn>(
         {
           ...keysMock[0],
@@ -150,7 +154,7 @@ const initializeService = (fetcher: AxiosInstance, isMock: boolean) => {
           id: key_id,
         },
         false,
-        "Criado com sucesso"
+        "Atualizado com sucesso"
       );
     }
 
